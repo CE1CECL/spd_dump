@@ -653,26 +653,20 @@ void select_partition(spdio_t* io, const char* name,
 		sizeof(pkt.name) + (mode64 ? 16 : 4));
 }
 
-#define PROGRESS_BAR_WIDTH 40
+#define PROGRESS_BAR_WIDTH 50
 
 void print_progress_bar(float progress) {
-	static int completed0 = 0;
-	if (completed0 == PROGRESS_BAR_WIDTH) completed0 = 0;
 	int completed = PROGRESS_BAR_WIDTH * progress;
 	int remaining;
-	if (completed != completed0)
-	{
-		remaining = PROGRESS_BAR_WIDTH - completed;
-		printf("[");
-		for (int i = 0; i < completed; i++) {
-			printf("=");
-		}
-		for (int i = 0; i < remaining; i++) {
-			printf(" ");
-		}
-		printf("] %.1f%%\n", 100 * progress);
+	remaining = PROGRESS_BAR_WIDTH - completed;
+	printf("Progress: [");
+	for (int i = 0; i < completed; i++) {
+		printf("#");
 	}
-	completed0 = completed;
+	for (int i = 0; i < remaining; i++) {
+		printf("-");
+	}
+	printf("] %.1f%% Complete\r", 100 * progress);
 }
 
 uint64_t dump_partition(spdio_t* io,
@@ -742,6 +736,7 @@ uint64_t dump_partition(spdio_t* io,
 		offset += nread;
 		if (n != nread) break;
 	}
+	printf("\n");
 	DBG_LOG("dump_partition: %s+0x%llx, target: 0x%llx, read: 0x%llx\n",
 		name, (long long)start, (long long)len,
 		(long long)(offset - start));
@@ -906,8 +901,7 @@ int gpt_info(partition_t* ptable, const char* fn_pgpt, const char* fn_xml, int* 
 		(*(ptable + i)).size = lba_count * real_SECTOR_SIZE;
 		printf("%3d %36s %lldMB\n", i, (*(ptable + i)).name, ((*(ptable + i)).size >> 20));
 		fprintf(fo, "    <Partition id=\"%s\" size=\"", (*(ptable + i)).name);
-		if (i + 1 == n) fprintf(fo, "0x%x\"/>\n", ~0);
-		else fprintf(fo, "%lld\"/>\n", ((*(ptable + i)).size >> 20));
+		fprintf(fo, "%lld\"/>\n", ((*(ptable + i)).size >> 20));
 	}
 	fprintf(fo, "</Partitions>");
 	fclose(fo);
@@ -967,8 +961,7 @@ partition_t* partition_list(spdio_t* io, const char* fn, int* part_count_ptr) {
 			printf("%3d %36s %lldMB\n", i, (*(ptable + i)).name, ((*(ptable + i)).size >> 20));
 			if (fo) {
 				fprintf(fo, "    <Partition id=\"%s\" size=\"", (*(ptable + i)).name);
-				if (i + 1 == n) fprintf(fo, "0x%x\"/>\n", ~0);
-				else fprintf(fo, "%lld\"/>\n", ((*(ptable + i)).size >> 20));
+				fprintf(fo, "%lld\"/>\n", ((*(ptable + i)).size >> 20));
 			}
 		}
 		if (fo) {
@@ -1063,6 +1056,7 @@ void load_partition(spdio_t* io, const char* name,
 			}
 			print_progress_bar((offset + n) / (float)len);
 		}
+		printf("\n");
 		free(rawbuf);
 	} else {
 #endif
@@ -1081,6 +1075,7 @@ void load_partition(spdio_t* io, const char* name,
 			}
 			print_progress_bar((offset + n) / (float)len);
 		}
+		printf("\n");
 #if !USE_LIBUSB
 	}
 #endif
@@ -1391,6 +1386,8 @@ void dump_partitions(spdio_t* io, const char* fn, int* nand_info, int blk_size) 
 	}
 	printf("Always backup splloader\n");
 	dump_partition(io, "splloader", 0, 256 * 1024, "splloader.bin", blk_size);
+	printf("Always backup splloader_bak\n");
+	dump_partition(io, "splloader_bak", 0, 256 * 1024, "splloader_bak.bin", blk_size);
 
 	if (savepath[0]) {
 		printf("saving part table\n");

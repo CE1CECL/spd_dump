@@ -19,8 +19,8 @@
 #endif
 
 #if _WIN32
-#include <Windows.h>
-#include <Dbt.h>
+#include <windows.h>
+#include <dbt.h>
 #include <tchar.h>
 #define THRD_MESSAGE_EXIT WM_USER + 1
 DWORD WINAPI ThrdFunc(LPVOID lpParam);
