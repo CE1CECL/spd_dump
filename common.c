@@ -572,7 +572,7 @@ unsigned dump_flash(spdio_t* io,
 		offset += nread;
 		if (n != nread) break;
 	}
-	DBG_LOG("dump_flash: 0x%08x+0x%x, target: 0x%x, read: 0x%x\n", addr, start, len, offset - start);
+	DBG_LOG("\ndump_flash: 0x%08x+0x%x, target: 0x%x, read: 0x%x\n", addr, start, len, offset - start);
 	fclose(fo);
 	return offset;
 }
@@ -616,7 +616,7 @@ unsigned dump_mem(spdio_t* io,
 		offset += nread;
 		if (n != nread) break;
 	}
-	DBG_LOG("dump_mem: 0x%08x, target: 0x%x, read: 0x%x\n", start, len, offset - start);
+	DBG_LOG("\ndump_mem: 0x%08x, target: 0x%x, read: 0x%x\n", start, len, offset - start);
 	fclose(fo);
 	return offset;
 }
@@ -738,8 +738,7 @@ uint64_t dump_partition(spdio_t* io,
 		offset += nread;
 		if (n != nread) break;
 	}
-	printf("\n");
-	DBG_LOG("dump_partition: %s+0x%llx, target: 0x%llx, read: 0x%llx\n",
+	DBG_LOG("\ndump_partition: %s+0x%llx, target: 0x%llx, read: 0x%llx\n",
 		name, (long long)start, (long long)len,
 		(long long)(offset - start));
 	fclose(fo);
@@ -1058,7 +1057,6 @@ void load_partition(spdio_t* io, const char* name,
 			}
 			print_progress_bar((offset + n) / (float)len);
 		}
-		printf("\n");
 		free(rawbuf);
 	} else {
 #endif
@@ -1077,11 +1075,10 @@ void load_partition(spdio_t* io, const char* name,
 			}
 			print_progress_bar((offset + n) / (float)len);
 		}
-		printf("\n");
 #if !USE_LIBUSB
 	}
 #endif
-	DBG_LOG("load_partition: %s, target: 0x%llx, written: 0x%llx\n",
+	DBG_LOG("\nload_partition: %s, target: 0x%llx, written: 0x%llx\n",
 		name, (long long)len, (long long)offset);
 	fclose(fi);
 	encode_msg(io, BSL_CMD_END_DATA, NULL, 0);
