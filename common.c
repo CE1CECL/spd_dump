@@ -568,6 +568,7 @@ unsigned dump_flash(spdio_t* io,
 			ERR_EXIT("unexpected length\n");
 		if (fwrite(io->raw_buf + 4, 1, nread, fo) != nread)
 			ERR_EXIT("fwrite(dump) failed\n");
+		print_progress_bar((offset + nread - start) / (float)len);
 		offset += nread;
 		if (n != nread) break;
 	}
@@ -611,6 +612,7 @@ unsigned dump_mem(spdio_t* io,
 			ERR_EXIT("unexpected length\n");
 		if (fwrite(io->raw_buf + 4, 1, nread, fo) != nread)
 			ERR_EXIT("fwrite(dump) failed\n");
+		print_progress_bar((offset + nread - start) / (float)len);
 		offset += nread;
 		if (n != nread) break;
 	}
@@ -664,7 +666,7 @@ void print_progress_bar(float progress) {
 		printf("#");
 	}
 	for (int i = 0; i < remaining; i++) {
-		printf("-");
+		printf(".");
 	}
 	printf("] %.1f%% Complete\r", 100 * progress);
 }

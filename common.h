@@ -3,6 +3,11 @@
 #define _GNU_SOURCE 1
 #define _FILE_OFFSET_BITS 64
 
+#undef _WIN32_WINNT
+#undef WINVER
+#define _WIN32_WINNT 0x0400
+#define WINVER _WIN32_WINNT
+
 #define ARGC_MAX 8
 #define ARGC_LEN 384
 
